@@ -14,4 +14,16 @@ CHIP HalfAdder {
 
     PARTS:
     // Put you code here:
+    Nand(a=a,b=a,out=nota); // a not gate
+    Nand(a=b,b=b,out=notb); // b not gate
+
+    //carry
+    Nand(a=a,b=b,out=temp1);
+    Nand(a=temp1,b=temp1,out=carry);
+
+    //sum
+    Nand(a=a,b=notb,out=temp2);
+    Nand(a=nota,b=b,out=temp3);
+    Nand(a=temp2,b=temp3,out=sum);
+
 }

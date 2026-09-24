@@ -15,4 +15,8 @@ CHIP Mux {
 
     PARTS:
     // Put your code here:
+    Nand(a=sel, b=sel, out=selnot); //sel not gate
+    Nand(a=selnot, b=a, out=temp1); //s`a Nand
+    Nand(a=sel,b=b, out=temp2); //s`b Nand
+    Nand(a=temp1,b=temp2,out=out); 
 }

@@ -43,4 +43,44 @@ CHIP ALU {
 
     PARTS:
    // Put you code here:
+   //zx
+   Mux16(a=x,b=false,sel=zx,out=x1); // when zx==1 , sel==1 ,choose b
+
+   //nx
+   Not16(in=x1,out=notx1);
+   Mux16(a=x1,b=notx1,sel=nx,out=xfinal);
+
+   //zy
+   Mux16(a=y,b=false,sel=zy,out=y1);
+
+   //ny
+   Not16(in=y1,out=noty1);
+   Mux16(a=y1,b=noty1,sel=ny,out=yfinal);
+
+   //f
+   Add16(a=xfinal, b=yfinal, out=addResult);
+   And16(a=xfinal, b=yfinal, out=andResult);
+   Mux16(a=andResult, b=addResult, sel=f, out=fResult);
+
+   //no
+   Not16(in=fResult,out=notfResult);
+   Mux16(
+    a=fResult, 
+    b=notfResult, 
+    sel=no, 
+    out=out,            //把整組 16-bit 訊號接往外層的 out 接腳
+    out[0..7]=outLow,   //從輸出中拉出 0~7 位元，命名為內部導線 outLow
+    out[8..15]=outHigh, //從輸出中拉出 8~15 位元，命名為內部導線 outHigh
+    out[15]=ng          //從輸出中拉出第 15 位元，直接接往外層的 ng 接腳
+);
+
+   
+   //zr zero flag
+   Or8Way(in=outLow, out=c1);
+   Or8Way(in=outHigh, out=c2);
+   Or(a=c1,b=c2,out=zrtemp); //if out[0] to out[15] any bit is 1 ,Output=1.
+   Not(in=zrtemp,out=zr); //if the Output is 0, zr=1.
+
+   
+   
 }
