@@ -17,4 +17,8 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+    Mux
+
+    Register()
+    Inc16()
 }
