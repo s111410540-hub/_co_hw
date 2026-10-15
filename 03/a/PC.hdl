@@ -17,8 +17,20 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
-    Mux
+    // 算出目前值 + 1
+    Inc16(in=current, out=plusOne);
 
-    Register()
-    Inc16()
+    // inc=1：加一；inc=0：保持原值
+    Mux16(a=current, b=plusOne, sel=inc, out=afterInc);
+
+    // load=1：改用輸入 in，覆蓋 inc 的結果
+    Mux16(a=afterInc, b=in, sel=load, out=afterLoad);
+
+    // reset=1：改用 0，覆蓋前面的結果
+    Mux16(a=afterLoad, b=false, sel=reset, out=next);
+
+    // 儲存下一個值，同時輸出並回饋給前面的電路
+    Register(in=next, load=true, out=current, out=out);
+
+    //Mux16 的規則是：sel=0 選 a，sel=1 選 b。因此，越後面的 Mux 優先權越高，最後的 reset 可以覆蓋所有選擇。
 }
