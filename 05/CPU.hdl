@@ -34,10 +34,43 @@ CHIP CPU {
                          // the current program (reset==0).
 
     OUT outM[16],        // M value output
-        writeM,          // Write to M? 
+        writeM,          // Write to M?
         addressM[15],    // Address in data memory (of M)
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    // A register
+    Mux16(a=instruction, b=tempoutM, sel=instruction[15], out=aIn);
+    Not(in=instruction[15], out=isAinst);
+    Or(a=instruction[5], b=isAinst, out=loadA);
+    ARegister(in=aIn, load=loadA, out=Aregisterout, out[0..14]=addressM);
+
+    // D register
+    And(a=instruction[15], b=instruction[4], out=loadD);
+    DRegister(in=tempoutM, load=loadD, out=x);
+
+    // ALU
+    Mux16(a=Aregisterout, b=inM, sel=instruction[12], out=y);
+    ALU(x=x, y=y,
+        zx=instruction[11],  //注意順序
+        nx=instruction[10],
+        zy=instruction[9],  
+        ny=instruction[8],
+        f=instruction[7],   
+        no=instruction[6],
+        out=tempoutM, out=outM, zr=zr, ng=ng);
+
+    // writeM
+    And(a=instruction[15], b=instruction[3], out=writeM);
+
+    // Program Counter
+    Or(a=zr, b=ng, out=temp1);
+    Not(in=temp1, out=pos);
+    And(a=instruction[2], b=ng,  out=JLT);
+    And(a=instruction[1], b=zr,  out=JEQ);
+    And(a=instruction[0], b=pos, out=JGT);
+    Or(a=JLT, b=JEQ, out=JLE); //OR只有兩個輸入，所以要用另外個串起來
+    Or(a=JLE, b=JGT, out=jump);
+    And(a=instruction[15], b=jump, out=loadPC);
+    PC(in=Aregisterout, load=loadPC, inc=true, reset=reset, out[0..14]=pc); //記得要使用true
 }
