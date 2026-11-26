@@ -1,0 +1,27 @@
+function Main.main 3
+    push constant 0
+    not
+    pop local 0
+label WHILE_EXP0
+    push local 0
+    not
+    if-goto WHILE_END1
+    call Ui.titleScreen 0
+    pop local 1
+    push local 1
+    call NumberBombGame.new 1
+    pop local 2
+    push local 2
+    call NumberBombGame.run 1
+    pop temp 0
+    push local 2
+    call NumberBombGame.dispose 1
+    pop temp 0
+    call Ui.askPlayAgain 0
+    pop local 0
+    goto WHILE_EXP0
+label WHILE_END1
+    call Ui.goodbye 0
+    pop temp 0
+    push constant 0
+    return

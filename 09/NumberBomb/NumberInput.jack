@@ -1,0 +1,44 @@
+/**
+ * Reads a non-negative number from the keyboard, echoing the digits at
+ * the current cursor position.
+ *
+ * Unlike Keyboard.readInt, it ignores keys that are not digits, limits the
+ * number of digits, and only accepts ENTER once at least one digit is typed.
+ */
+class NumberInput {
+
+    /**
+     * Reads up to maxDigits digits. BACKSPACE deletes the last digit,
+     * ENTER confirms. Returns the number typed.
+     */
+    function int read(int maxDigits) {
+        var int key, value, digits;
+        var boolean done;
+
+        while (~done) {
+            let key = Ui.waitKey();
+
+            // '0'..'9' are key codes 48..57
+            if ((key > 47) & (key < 58) & (digits < maxDigits)) {
+                let value = (value * 10) + (key - 48);
+                let digits = digits + 1;
+                do Output.printChar(key);
+            }
+
+            // BACKSPACE (129): drop the last digit and erase it on screen
+            if ((key = 129) & (digits > 0)) {
+                let value = value / 10;
+                let digits = digits - 1;
+                do Output.backSpace();
+                do Output.printChar(32);
+                do Output.backSpace();
+            }
+
+            // ENTER (128)
+            if ((key = 128) & (digits > 0)) {
+                let done = true;
+            }
+        }
+        return value;
+    }
+}

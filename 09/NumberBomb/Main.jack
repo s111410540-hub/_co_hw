@@ -1,0 +1,28 @@
+/**
+ * Number Bomb -- a number-guessing party game for the Hack computer.
+ *
+ * A bomb is hidden at a random number between 1 and 100. Players take
+ * turns guessing; every safe guess shrinks the range the bomb can be in.
+ * Whoever guesses the bomb's number loses.
+ *
+ * Main shows the title screen, runs one game after another, and quits
+ * when the players decline a rematch.
+ */
+class Main {
+
+    function void main() {
+        var boolean playing, vsComputer;
+        var NumberBombGame game;
+
+        let playing = true;
+        while (playing) {
+            let vsComputer = Ui.titleScreen();
+            let game = NumberBombGame.new(vsComputer);
+            do game.run();
+            do game.dispose();
+            let playing = Ui.askPlayAgain();
+        }
+        do Ui.goodbye();
+        return;
+    }
+}

@@ -1,0 +1,44 @@
+/**
+ * Pseudo-random numbers for the game.
+ *
+ * Uses the generator seed' = 171 * seed mod 30269 (one component of the
+ * Wichmann-Hill generator), computed with Schrage's method so that no
+ * intermediate value exceeds 16 bits: 30269 = 171 * 177 + 2.
+ *
+ * The Hack computer has no clock, so tick() is called while the program
+ * waits for key presses; the seed then depends on the player's timing.
+ */
+class Random {
+    static int seed;   // always in 1..30268 once next() has run
+
+    /** Advances the seed by one; called repeatedly while waiting for input. */
+    function void tick() {
+        let seed = seed + 1;
+        if (seed > 30268) {
+            let seed = 1;
+        }
+        return;
+    }
+
+    /** Returns the next pseudo-random number, in 1..30268. */
+    function int next() {
+        if (seed < 1) {
+            let seed = 1;
+        }
+        let seed = (171 * Random.mod(seed, 177)) - (2 * (seed / 177));
+        if (seed < 0) {
+            let seed = seed + 30269;
+        }
+        return seed;
+    }
+
+    /** Returns a pseudo-random number in lo..hi (inclusive). */
+    function int between(int lo, int hi) {
+        return lo + Random.mod(Random.next(), (hi - lo) + 1);
+    }
+
+    /** Returns a mod n, for a >= 0 and n > 0 (Jack has no % operator). */
+    function int mod(int a, int n) {
+        return a - ((a / n) * n);
+    }
+}
